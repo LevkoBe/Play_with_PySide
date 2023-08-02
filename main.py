@@ -45,6 +45,22 @@ class ColorChangeApp(QWidget):
 
         layout.addWidget(self.corner_slider)
 
+        self.border_thickness_slider = QSlider(Qt.Horizontal, self)
+        self.border_thickness_slider.setMinimum(0)
+        self.border_thickness_slider.setMaximum(10)  # Maximum border thickness
+        self.border_thickness_slider.setValue(0)      # Initial border thickness
+        self.border_thickness_slider.setTickPosition(QSlider.TicksBelow)
+        self.border_thickness_slider.setTickInterval(1)
+        self.border_thickness_slider.valueChanged.connect(self.changeBorder)
+
+        layout.addWidget(self.border_thickness_slider)
+
+        self.border_color_dialog = QColorDialog(self)
+        self.border_color_dialog.setOption(QColorDialog.NoButtons)
+        self.border_color_dialog.currentColorChanged.connect(self.changeBorderColor)  # Connect to changeBorderColor method
+
+        layout.addWidget(self.border_color_dialog)  # Add the border color dialog to the layout
+
         self.slider = QSlider(Qt.Horizontal, self)
         self.slider.setMinimum(0)
         self.slider.setMaximum(700)
@@ -64,6 +80,7 @@ class ColorChangeApp(QWidget):
         self.button.clicked.connect(self.openColorDialog)
         self.window_color_dialog.show()
         self.text_color_dialog.show()
+        self.border_color_dialog.show()
 
         # Set the initial view of the button with rounded corners (50%)
         self.changeCornerRounding(self.corner_slider.value())
@@ -87,13 +104,23 @@ class ColorChangeApp(QWidget):
         rounded_value = value / 100.0 * min_dimension / 2
         self.button.setStyleSheet(f'background-color: {self.button.palette().color(self.button.backgroundRole()).name()};'
                                   f'border-radius: {rounded_value}px;'
+                                  f'border: {self.border_thickness_slider.value()}px solid {self.border_color_dialog.currentColor().name()};'
                                   f'color: {self.button.palette().color(self.button.foregroundRole()).name()};')
+
+    def changeBorder(self):
+        # Call changeCornerRounding to update border thickness and color
+        self.changeCornerRounding(self.corner_slider.value())
+
+    def changeBorderColor(self, color):
+        # Call changeCornerRounding to update border color
+        self.changeCornerRounding(self.corner_slider.value())
 
     def changeSize(self, value):
         size = f'{value}px'
         rounded_value = self.corner_slider.value() / 100.0 * value / 2
         self.button.setStyleSheet(f'background-color: {self.button.palette().color(self.button.backgroundRole()).name()};'
                                   f'border-radius: {rounded_value}px;'
+                                  f'border: {self.border_thickness_slider.value()}px solid {self.border_color_dialog.currentColor().name()};'
                                   f'min-width: {size}; max-width: {size};'
                                   f'min-height: {size}; max-height: {size};')
 
