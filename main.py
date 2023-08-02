@@ -29,6 +29,12 @@ class ColorChangeApp(QWidget):
 
         layout.addWidget(self.window_color_dialog)
 
+        self.text_color_dialog = QColorDialog(self)
+        self.text_color_dialog.setOption(QColorDialog.NoButtons)
+        self.text_color_dialog.currentColorChanged.connect(self.changeTextColor)
+
+        layout.addWidget(self.text_color_dialog)
+
         self.slider = QSlider(Qt.Horizontal, self)
         self.slider.setMinimum(0)
         self.slider.setMaximum(700)
@@ -47,6 +53,7 @@ class ColorChangeApp(QWidget):
 
         self.button.clicked.connect(self.openColorDialog)
         self.window_color_dialog.show()
+        self.text_color_dialog.show()
 
     def openColorDialog(self):
         self.color_dialog.show()
@@ -56,6 +63,10 @@ class ColorChangeApp(QWidget):
 
     def changeWindowColor(self, color):
         self.setStyleSheet(f'background-color: {color.name()};')
+
+    def changeTextColor(self, color):
+        self.button.setStyleSheet(f'background-color: {self.button.palette().color(self.button.backgroundRole()).name()};'
+                                  f'color: {color.name()};')
 
     def changeSize(self, value):
         size = f'{value}px'
