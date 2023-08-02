@@ -1,16 +1,17 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QColorDialog, QVBoxLayout, QSlider, QFontDialog
+from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QColorDialog, QVBoxLayout, QSlider, QFontDialog, QTextEdit
 from PySide6.QtGui import QColor
 from PySide6.QtCore import Qt
 
 class ColorChangeApp(QWidget):
     def __init__(self):
         super().__init__()
+        self.config_text_edit = QTextEdit(self)  # Initialize the QTextEdit attribute
         self.initUI()
 
     def initUI(self):
         self.setWindowTitle('Color, Size, Font, and Corner Rounding Change Button')
-        self.setGeometry(100, 100, 400, 250)
+        self.setGeometry(100, 100, 600, 400)
 
         layout = QVBoxLayout()
 
@@ -85,18 +86,25 @@ class ColorChangeApp(QWidget):
         # Set the initial view of the button with rounded corners (50%)
         self.changeCornerRounding(self.corner_slider.value())
 
+        # Add QTextEdit widget to display the selected configurations
+        self.config_text_edit = QTextEdit(self)
+        layout.addWidget(self.config_text_edit)
+
     def openColorDialog(self):
         self.color_dialog.show()
 
     def changeColor(self, color):
         self.button.setStyleSheet(f'background-color: {color.name()};')
+        self.updateConfigurations()
 
     def changeWindowColor(self, color):
         self.setStyleSheet(f'background-color: {color.name()};')
+        self.updateConfigurations()
 
     def changeTextColor(self, color):
         self.button.setStyleSheet(f'background-color: {self.button.palette().color(self.button.backgroundRole()).name()};'
                                   f'color: {color.name()};')
+        self.updateConfigurations()
 
     def changeCornerRounding(self, value):
         # Calculate the border radius based on the minimum of button width and height
@@ -106,6 +114,7 @@ class ColorChangeApp(QWidget):
                                   f'border-radius: {rounded_value}px;'
                                   f'border: {self.border_thickness_slider.value()}px solid {self.border_color_dialog.currentColor().name()};'
                                   f'color: {self.button.palette().color(self.button.foregroundRole()).name()};')
+        self.updateConfigurations()
 
     def changeBorder(self):
         # Call changeCornerRounding to update border thickness and color
@@ -123,15 +132,39 @@ class ColorChangeApp(QWidget):
                                   f'border: {self.border_thickness_slider.value()}px solid {self.border_color_dialog.currentColor().name()};'
                                   f'min-width: {size}; max-width: {size};'
                                   f'min-height: {size}; max-height: {size};')
+        self.updateConfigurations()
 
     def changeFont(self):
         font_dialog = QFontDialog(self.button.font(), self)
         if font_dialog.exec():
             font = font_dialog.selectedFont()
             self.button.setFont(font)
+            self.updateConfigurations()
+
+    def updateConfigurations(self):
+        configurations = (
+            f'Button background-color: {self.button.palette().color(self.button.backgroundRole()).name()}\n'
+            f'Button Text color: {self.button.palette().color(self.button.foregroundRole()).name()}\n'
+            f'Window background-color: {self.palette().color(self.backgroundRole()).name()}\n'
+            f'font: {self.button.font().family()}, {self.button.font().pointSize()}pt\n'
+            f'Button min-width, min-height, max...: {self.slider.value()}px\n'
+            f'Corner border-radius: {self.corner_slider.value()}%\n'
+            f'border: {self.border_thickness_slider.value()}px solid (color): {self.border_color_dialog.currentColor().name()}'
+        )
+        self.config_text_edit.setPlainText(configurations)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = ColorChangeApp()
     window.show()
     sys.exit(app.exec())
+
+
+# Button background-color: #d6a770
+# Button Text color: #356d7c
+# Window background-color: #f1a64a
+# font: Old English Text MT, 24pt
+# Button min-width, min-height, max...: 100px
+# Corner border-radius: 50%
+# border: 2px solid (color): #356d7c
