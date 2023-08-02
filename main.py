@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QColorDialog, QVBoxLayout, QSlider, QFontDialog
+from PySide6.QtGui import QColor
 from PySide6.QtCore import Qt
-
 
 class ColorChangeApp(QWidget):
     def __init__(self):
@@ -23,6 +23,12 @@ class ColorChangeApp(QWidget):
 
         layout.addWidget(self.color_dialog)
 
+        self.window_color_dialog = QColorDialog(self)
+        self.window_color_dialog.setOption(QColorDialog.NoButtons)
+        self.window_color_dialog.currentColorChanged.connect(self.changeWindowColor)
+
+        layout.addWidget(self.window_color_dialog)
+
         self.slider = QSlider(Qt.Horizontal, self)
         self.slider.setMinimum(0)
         self.slider.setMaximum(700)
@@ -40,12 +46,16 @@ class ColorChangeApp(QWidget):
         self.setLayout(layout)
 
         self.button.clicked.connect(self.openColorDialog)
+        self.window_color_dialog.show()
 
     def openColorDialog(self):
         self.color_dialog.show()
 
     def changeColor(self, color):
         self.button.setStyleSheet(f'background-color: {color.name()};')
+
+    def changeWindowColor(self, color):
+        self.setStyleSheet(f'background-color: {color.name()};')
 
     def changeSize(self, value):
         size = f'{value}px'
@@ -58,7 +68,6 @@ class ColorChangeApp(QWidget):
         if font_dialog.exec():
             font = font_dialog.selectedFont()
             self.button.setFont(font)
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
