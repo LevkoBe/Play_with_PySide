@@ -9,7 +9,7 @@ class ColorChangeApp(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Color, Size, and Font Change Button')
+        self.setWindowTitle('Color, Size, Font, and Corner Rounding Change Button')
         self.setGeometry(100, 100, 400, 250)
 
         layout = QVBoxLayout()
@@ -35,6 +35,16 @@ class ColorChangeApp(QWidget):
 
         layout.addWidget(self.text_color_dialog)
 
+        self.corner_slider = QSlider(Qt.Horizontal, self)
+        self.corner_slider.setMinimum(0)
+        self.corner_slider.setMaximum(100)  # Maximum corner rounding size in percentage
+        self.corner_slider.setValue(50)     # Initial corner rounding size (50%)
+        self.corner_slider.setTickPosition(QSlider.TicksBelow)
+        self.corner_slider.setTickInterval(5)
+        self.corner_slider.valueChanged.connect(self.changeCornerRounding)
+
+        layout.addWidget(self.corner_slider)
+
         self.slider = QSlider(Qt.Horizontal, self)
         self.slider.setMinimum(0)
         self.slider.setMaximum(700)
@@ -55,6 +65,9 @@ class ColorChangeApp(QWidget):
         self.window_color_dialog.show()
         self.text_color_dialog.show()
 
+        # Set the initial view of the button with rounded corners (50%)
+        self.changeCornerRounding(self.corner_slider.value())
+
     def openColorDialog(self):
         self.color_dialog.show()
 
@@ -68,9 +81,19 @@ class ColorChangeApp(QWidget):
         self.button.setStyleSheet(f'background-color: {self.button.palette().color(self.button.backgroundRole()).name()};'
                                   f'color: {color.name()};')
 
+    def changeCornerRounding(self, value):
+        # Calculate the border radius based on the minimum of button width and height
+        min_dimension = min(self.button.width(), self.button.height())
+        rounded_value = value / 100.0 * min_dimension / 2
+        self.button.setStyleSheet(f'background-color: {self.button.palette().color(self.button.backgroundRole()).name()};'
+                                  f'border-radius: {rounded_value}px;'
+                                  f'color: {self.button.palette().color(self.button.foregroundRole()).name()};')
+
     def changeSize(self, value):
         size = f'{value}px'
+        rounded_value = self.corner_slider.value() / 100.0 * value / 2
         self.button.setStyleSheet(f'background-color: {self.button.palette().color(self.button.backgroundRole()).name()};'
+                                  f'border-radius: {rounded_value}px;'
                                   f'min-width: {size}; max-width: {size};'
                                   f'min-height: {size}; max-height: {size};')
 
