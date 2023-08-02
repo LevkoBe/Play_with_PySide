@@ -1,7 +1,7 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QColorDialog, QVBoxLayout, QSlider
-from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QColorDialog, QVBoxLayout, QSlider, QFontDialog
 from PySide6.QtCore import Qt
+
 
 class ColorChangeApp(QWidget):
     def __init__(self):
@@ -9,8 +9,8 @@ class ColorChangeApp(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Color and Size Change Button')
-        self.setGeometry(100, 100, 300, 200)
+        self.setWindowTitle('Color, Size, and Font Change Button')
+        self.setGeometry(100, 100, 400, 250)
 
         layout = QVBoxLayout()
 
@@ -24,14 +24,18 @@ class ColorChangeApp(QWidget):
         layout.addWidget(self.color_dialog)
 
         self.slider = QSlider(Qt.Horizontal, self)
-        self.slider.setMinimum(50)
-        self.slider.setMaximum(200)
+        self.slider.setMinimum(0)
+        self.slider.setMaximum(700)
         self.slider.setValue(100)
         self.slider.setTickPosition(QSlider.TicksBelow)
         self.slider.setTickInterval(25)
         self.slider.valueChanged.connect(self.changeSize)
 
         layout.addWidget(self.slider)
+
+        self.button_font = QPushButton('Change Font', self)
+        layout.addWidget(self.button_font)
+        self.button_font.clicked.connect(self.changeFont)
 
         self.setLayout(layout)
 
@@ -48,6 +52,13 @@ class ColorChangeApp(QWidget):
         self.button.setStyleSheet(f'background-color: {self.button.palette().color(self.button.backgroundRole()).name()};'
                                   f'min-width: {size}; max-width: {size};'
                                   f'min-height: {size}; max-height: {size};')
+
+    def changeFont(self):
+        font_dialog = QFontDialog(self.button.font(), self)
+        if font_dialog.exec():
+            font = font_dialog.selectedFont()
+            self.button.setFont(font)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
